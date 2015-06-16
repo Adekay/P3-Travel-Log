@@ -1,0 +1,131 @@
+{% extends "main.html" %}
+{% block content %}
+
+<div class="row"> </div>
+<div>&nbsp;</div>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+  	<div class="row">
+		<div class = 'alert alert-info alert-dismissible' role="alert">
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	      <ul>
+	        {% for message in messages %}
+	            <li> <strong> {{ message }} </strong> </li>
+	        {% endfor %}
+	      </ul>
+		</div>
+  	</div>
+  {% endif %}
+{% endwith %}
+
+<div class = 'alert alert-dismissible' role="alert">
+<div class="jumbotron">
+  <button type="button" class="jumbotron-close close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <h1>Sign Up Now!</h1>
+  <p>Preserve and share the memories of your travels with our community. Create detailed travel logs to guide our members along their own adventures, and browse the community's posts to find your next bit of paradise!</p>
+  <p><a class="btn btn-primary btn-lg" href="#" role="button">Sign Me Up!</a> <a class="btn btn-primary btn-lg" href="#" role="button">Log Me Back In!</a></p>
+</div>
+</div>
+
+<div class="panel panel-transparent">
+	<div class="panel-heading">
+		<h3 class="">Browse Our Travel Logs</h3>
+	</div>
+	<div class="panel-body">
+		<div class="row">
+			{% for region in regions %}
+			<div class="col-md-6 col-lg-4 text-center">
+				<div class="thumbnail">
+ 					<div class="row">
+						<div class="col-md-12 ">
+							<a href = "{{url_for('showRegion', region_id = region.id)}}"><h3>{{region.name}}</h3></a>
+ 						</div>
+					</div>
+ 					<div class="row">
+						<div class="col-md-12 ">
+							<a href = "{{url_for('showRegion', region_id = region.id)}}">
+							<img class="img-responsive region-thumbnail" src="{{ url_for('static', filename='thumbnails/'+region.picture) }}" alt="{{region.name}}">
+							</a>
+ 						</div>
+					</div>
+					<div>&nbsp;</div>
+ 					<div class="row">
+						<div class="col-md-12 ">
+							<div class="text-left">
+								<strong>User Rating: </strong>
+								{% for i in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] %}
+									{% if region.rating < i %}
+										<img src="{{ url_for('static', filename='images/star_empty.png') }}" alt="Empty Star">
+									{% else %}
+										<img src="{{ url_for('static', filename='images/star.png') }}" alt="Star">
+									{% endif %}
+								{% endfor %}
+							</div>
+ 						</div>
+					</div>
+					<div>&nbsp;</div>
+ 					<div class="row">
+						<div class="col-md-12 ">
+						  	<a href="{{region.geo_location}}" class="pull-left" target="_blank"><img class="pull-left" src="{{ url_for('static', filename='images/geotag_icon.png') }}" alt="Google Maps"> Find on a map</a>
+ 						</div>
+					</div>
+					<div>&nbsp;</div>
+ 					<div class="row">
+						<div class="col-md-12 col-bottom">
+							<div class="media">
+							  <div class="media-body align-bottom">
+							    <p class="text-muted small text-right">Author : {{ region.user.name}} <br>
+							    <i>Last updated : {{ region.modifiy_date }}</i>
+							    </p>
+							  </div>
+							  <div class="media-right">
+							      <img class="media-object profile-pic" src="{{ region.user.picture}}" alt="Creator Profile Pic">
+							  </div>
+							</div>
+						  	
+						  	
+
+ 						</div>
+					</div>
+
+				</div>
+			</div>
+			{% endfor %}
+			
+		</div>
+	</div>
+</div>
+
+
+
+<!-- 	<div class="row top-menu">
+		<div class="col-md-10"></div>
+		<div class="col-md-2 text-right">
+					</div>
+	</div>
+	<div class="row divider blue">
+		<div class="col-md-12"></div>
+	</div>
+	<div class="row banner main">
+		<div class="col-md-1"></div>
+		<div class="col-md-11 padding-none">
+			<h1>Travel Logs</h1>
+		</div>
+	</div>
+
+ -->
+<!-- 	{%if 'username' in session %}
+		<div class="row padding-top padding-bottom">
+			<div class="col-md-1"></div>
+			<div class="col-md-10 padding-none">
+				<a href="{{url_for('newRegion')}}">
+					<button class="btn btn-default" id="new-region">
+						<span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Add Travel Log
+					</button>
+				</a>
+			</div>
+			<div class="col-md-1"></div>
+		</div>
+	{% endif %}
+ -->
+{% endblock %}
