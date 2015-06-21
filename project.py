@@ -1,24 +1,18 @@
-from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
-
-from sqlalchemy import create_engine, asc
-from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Region, Place, User
-
-from flask import session
-import random, string
-
-from oauth2client.client import flow_from_clientsecrets
-from oauth2client.client import FlowExchangeError
+import random
+import string
 import httplib2
 import json
-from flask import make_response
 import requests
-
 import os
 import sys 
 import datetime
 import urllib
 import uuid
+from flask import Flask, render_template, request, redirect, jsonify, url_for, flash, session, make_response
+from sqlalchemy import create_engine, asc
+from sqlalchemy.orm import sessionmaker
+from database_setup import Base, Region, Place, User
+from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
 from PIL import Image
 
 
@@ -39,6 +33,7 @@ UPLOAD_FOLDER = './static/thumbnails/'
 ALLOWED_EXTENSIONS = set(['jpg', 'jpeg'])
 
 
+
 #JSON APIs to view Region and Place Information
 @app.route('/region/<int:region_id>/place/JSON')
 def regionPlaceJSON(region_id):
@@ -55,6 +50,7 @@ def placeItemJSON(region_id, place_id):
 def regionsJSON():
     regions = dbsession.query(Region).all()
     return jsonify(regions= [r.serialize for r in regions])
+
 
 
 # Login related functions
@@ -79,11 +75,13 @@ def getUserID(email):
       return None
 
 
+
 # Image saving related functions
 
 # Check if the file has a valid picture file extension
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
 
 # Save the picture, creating thumbnails
 def savePicture(request):
@@ -134,6 +132,8 @@ def removePicture(filename):
     os.remove(large_file)
 
 
+# Login related functions
+
 @app.route('/fbconnect', methods=['POST'])
 def fbconnect():
     if request.args.get('state') != session['state']:
@@ -141,7 +141,6 @@ def fbconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
     access_token = request.data
-    # print "access token received %s " % access_token
 
     app_id = json.loads(open('facebook_client_secrets.json', 'r').read())['web']['app_id']
     app_secret = json.loads(open('facebook_client_secrets.json', 'r').read())['web']['app_secret']
@@ -402,6 +401,11 @@ def deleteRegion(region_id):
     return "<script>function myFunction() {alert('You are not authorized to delete this travel log.');}</script><body onload='myFunction()'>"
 
   if request.method == 'POST':
+
+    regionItems = dbsession.query(Place).filter_by(region_id = region_id).all()
+    for i in regionItems:
+      dbsession.delete(i)
+
     dbsession.delete(regionToDelete)
     flash('Travel log "%s" deleted.' % regionToDelete.name)
     dbsession.commit()

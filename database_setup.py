@@ -39,8 +39,8 @@ class Region(Base):
            'picture'       : self.picture,
            'geo_location'  : self.geo_location,
            'rating'  : self.rating,
-           'creation_date'  : self.creation_date,
-           'modifiy_date'  : self.modifiy_date,
+           'creation_date'  : self.creation_date.strftime('%Y-%m-%d %H:%M:%S'),
+           'modifiy_date'  : self.modifiy_date.strftime('%Y-%m-%d %H:%M:%S'),
            'user_id'      : self.user_id,
        }
 
@@ -81,8 +81,8 @@ class Place(Base):
            'geo_location'  : self.geo_location,
            'info_website'  : self.info_website,
            'rating'  : self.rating,
-           'creation_date'  : self.creation_date,
-           'modifiy_date'  : self.modifiy_date,
+           'creation_date'  : self.creation_date.strftime('%Y-%m-%d %H:%M:%S'),
+           'modifiy_date'  : self.modifiy_date.strftime('%Y-%m-%d %H:%M:%S'),
            'user_id'      : self.user_id,
        }
 

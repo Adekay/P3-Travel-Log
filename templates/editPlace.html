@@ -57,7 +57,7 @@
 			    <input type="text" class="form-control" maxlength="500" name="info_website" value="{{ item.info_website }}">
 			  </div>
 			  <button type="submit" class="btn btn-primary">Submit</button>
-			  <a href="{{url_for('showRegions')}}" class="btn btn-default">Cancel</a>
+			  <a href="{{url_for('showRegion', region_id = region_id)}}" class="btn btn-default">Cancel</a>
 			</form>
 
 		</div>
@@ -69,6 +69,13 @@
 
 {% block scripts %}
 <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap-filestyle.min.js') }}"> </script>
+
+<script>
+	$(function() {
+    	var temp="{{ item.rating }}"; 
+    	$("#rating").val(temp);
+	});
+</script>
 
 <script>
 $(document).ready(function(){
