@@ -37,4 +37,4 @@ To run the program, follow the following steps :
 1) Log into Vagrant using a command shell and the command "Vagrant ssh"
 2) Go into the "vagrant" folder using "cd /vagrant"
 3) Run the project using the command "python project.py"
-
+4) Open a web browser and go to the the address "http://localhost:5000/"
