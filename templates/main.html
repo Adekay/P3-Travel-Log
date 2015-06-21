@@ -13,6 +13,9 @@
 
 		<title>Travel Log</title>
 		<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='images/logo.ico') }}" />
+
+	    <meta name="google-signin-client_id" content="307130684860-62ovf7l03hddj1eum1ep39gfpvhcps7c.apps.googleusercontent.com">
+
 	</head>
 	<body>
 
@@ -29,30 +32,33 @@
 	                </button>
 	                <a class="navbar-brand main-logo" href="{{url_for('showRegions')}}"><img class="img-responsive" src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo"></a>
 	                <a class="navbar-brand" href="{{url_for('showRegions')}}"> Travel Log</a>
-
 	            </div>
+
 	            <!-- Collect the nav links, forms, and other content for toggling -->
 	            <div class="collapse navbar-collapse" id="navbar-collapse">
 	                <ul class="nav navbar-nav">
 	                    <li>
 	                        <a href="{{url_for('newRegion')}}">Create Travel Log</a>
 	                    </li>
-	                    <li>
-	                        <a href="{{url_for('showUserSettings')}}">Settings</a>
-	                    </li>
+	                </ul>
+				    <ul class="nav navbar-nav navbar-right">
 	                    <li>
 							{%if 'email' not in session %}
-								<a href="{{url_for('showLogin')}}">Login</a>
+								<a href="#" data-toggle="modal" data-target="#modal-login">Login</a> 
 							{% else %}
 								<a href="{{url_for('disconnect')}}">Logout</a>
 							{% endif %}
 	                    </li>
-	                </ul>
+				    </ul>
+
 	            </div>
 	            <!-- /.navbar-collapse -->
 	        </div>
 	        <!-- /.container -->
 	    </nav>
+
+		{% block login %}
+		{% endblock %}
 
 	    <!-- Page Content -->
 		<div id="bg">
@@ -68,5 +74,10 @@
 	    <!-- Include all compiled plugins (below), or include individual files as needed -->
 	    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>		
 	    <script src="{{ url_for('static', filename='js/background.js') }}"></script>
+	    {% block login_scripts %}
+	    {% endblock %}
+
+	    {% block scripts %}
+	    {% endblock %}
 	</body>
 </html>

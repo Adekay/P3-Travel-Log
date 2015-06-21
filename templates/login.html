@@ -1,44 +1,9 @@
-
-
-<html>
-  <head>
-
-    <!-- Bootstrap Core CSS -->
-    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>   
-
-    <script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
-
-
-    <meta name="google-signin-client_id" content="307130684860-62ovf7l03hddj1eum1ep39gfpvhcps7c.apps.googleusercontent.com">
-
-    <script>
-      function start() {
-        gapi.load('auth2', function() {
-          auth2 = gapi.auth2.init({
-            client_id: '307130684860-62ovf7l03hddj1eum1ep39gfpvhcps7c.apps.googleusercontent.com',
-            // Scopes to request in addition to 'profile' and 'email'
-            //scope: 'additional_scope'
-          });
-        });
-      }
-    </script>
-
-  </head>
-  <body>
-
-<!-- Trigger the modal with a button -->
-<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#modal-login">Open Modal</button>
-
+{% extends "main.html" %}
+{% block login %}
 
   <!-- Modal -->
   <div class="modal fade" id="modal-login" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-login-dialog">
     
       <!-- Modal content-->
       <div class="modal-content">
@@ -52,31 +17,16 @@
 
             <div class="row text-center">
               <div class="col-md-12">
-                <img src="{{ url_for('static', filename='images/dropbox_signin.png') }}" alt="Sign In with Dropbox">
-              </div>
-            </div>
-            <div class="row text-center">
-              <div class="col-md-12">
                 <br>
                 <a href="#" onclick="fb_login();"><img src="{{ url_for('static', filename='images/facebook_signin.png') }}" alt="Sign In with Facebook"></a>
               </div>
             </div>
             <div class="row text-center">
               <div class="col-md-12">
-                <!-- <div id="google-custom-signin"></div> -->
                 <br>
                 <div id="custom_google_btn">
                   <a href="#"><img src="{{ url_for('static', filename='images/google_signin.png') }}" alt="Sign In with Google"></a>
                 </div>
-
-
-
-              </div>
-            </div>
-            <div class="row text-center">
-              <div class="col-md-12">
-                <br>
-                <img src="{{ url_for('static', filename='images/twitter_signin.png') }}" alt="Sign In with Twitter">
               </div>
             </div>
           </div>
@@ -86,10 +36,8 @@
               <div class="col-md-12">
                 <br>
                 <br>
-    
                 <img src="{{ url_for('static', filename='images/loading.gif') }}" alt="Loading...">
                 Loading...
-
                 <br>
                 <br>
               </div>
@@ -109,6 +57,44 @@
   </div>
 
 
+{% endblock %}
+
+{% block content %}
+
+<!-- Trigger the modal with a button -->
+<br>
+<br>
+
+<div class="text-center">
+  <div class="panel">
+    <div class="panel-body">
+    <h3>You must sign in to modify content.</h3>
+    <br><br>
+    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#modal-login">Login</button>
+      
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+
+
+{% block login_scripts %}
+
+    <script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
+
+    <script>
+      function start() {
+        gapi.load('auth2', function() {
+          auth2 = gapi.auth2.init({
+            client_id: '307130684860-62ovf7l03hddj1eum1ep39gfpvhcps7c.apps.googleusercontent.com',
+            // Scopes to request in addition to 'profile' and 'email'
+            //scope: 'additional_scope'
+          });
+        });
+      }
+    </script>
 
 <!-- Reset layout on modal open -->
 <script>
@@ -124,14 +110,6 @@ $('#modal-login').on('shown.bs.modal', function () {
 <!--FACEBOOK SIGN IN -->
 <script>
 
-window.fbAsyncInit = function() {
-  FB.init({
-    appId      : '118462538486305',
-    cookie     : true,  // enable cookies to allow the server to access 
-    xfbml      : true,
-    version    : 'v2.3'
-  });
-};
 
 (function(d, s, id){
    var js, fjs = d.getElementsByTagName(s)[0];
@@ -141,6 +119,15 @@ window.fbAsyncInit = function() {
    fjs.parentNode.insertBefore(js, fjs);
  }(document, 'script', 'facebook-jssdk'));
 
+
+window.fbAsyncInit = function() {
+  FB.init({
+    appId      : '118462538486305',
+    cookie     : true,  // enable cookies to allow the server to access 
+    xfbml      : true,
+    version    : 'v2.3'
+  });
+};
 
 function fb_login(){
     $('#modal-contents').hide();
@@ -227,7 +214,4 @@ function fb_login(){
 
 </script>
 
-  </body>
-</html>
-
-
+{% endblock %}

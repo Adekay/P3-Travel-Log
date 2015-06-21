@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect,jsonify, url_for, flash
+from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
 
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
@@ -14,7 +14,13 @@ import json
 from flask import make_response
 import requests
 
+import os
+import sys 
 import datetime
+import urllib
+import uuid
+from PIL import Image
+
 
 app = Flask(__name__)
 
@@ -28,6 +34,9 @@ dbsession = DBSession()
 
 CLIENT_ID = json.loads(open('google_client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Travel Log"
+DOWNLOAD_TMP_FOLDER = '/tmp/'
+UPLOAD_FOLDER = './static/thumbnails/'
+ALLOWED_EXTENSIONS = set(['jpg', 'jpeg'])
 
 
 #JSON APIs to view Region and Place Information
@@ -48,12 +57,12 @@ def regionsJSON():
     return jsonify(regions= [r.serialize for r in regions])
 
 
-#Login related functions
+# Login related functions
 def createUser(session):
   newUser = User(name = session['username'], email = session['email'], picture = session['picture'], allow_public_access = 1, signup_date = datetime.datetime.now())
   dbsession.add(newUser)
   dbsession.commit()
-  user = dbsession.query(User).filter_by(email = session['email']).one
+  user = dbsession.query(User).filter_by(email = session['email']).one()
   return user.id
 
 
@@ -70,12 +79,59 @@ def getUserID(email):
       return None
 
 
-#Login to regions app
-@app.route('/login')
-def showLogin():
-  state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
-  session['state'] = state
-  return render_template('login.html', STATE=state)
+# Image saving related functions
+
+# Check if the file has a valid picture file extension
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+# Save the picture, creating thumbnails
+def savePicture(request):
+  filename = ''
+  filepath = ''
+  try:
+
+    if request.form['picture_mode'] == 'web_radio':
+      # File is a URL, need to download it
+      if allowed_file(request.form['picture_url']):
+        filename = 'tb' + str(uuid.uuid4().hex) + '.' + request.form['picture_url'].rsplit('.', 1)[1]
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        urllib.urlretrieve(request.form['picture_url'], filepath)
+
+    elif request.form['picture_mode'] == 'disk_radio':
+      # Upload file and store it
+      file = request.files['file']
+      if allowed_file(file.filename):
+        filename = 'tb' + str(uuid.uuid4().hex) + '.' + file.filename.rsplit('.', 1)[1]
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+        file.close()
+
+    # Resize the thumbnails
+    file_prefix, file_ext = os.path.splitext(filepath)
+
+    im = Image.open(filepath)
+    im.thumbnail((1200, 920))
+    im.save(file_prefix + '_lg' + file_ext)
+
+    im.thumbnail((350, 270))
+    im.save(filepath)
+
+  except:
+    print "Unexpected error in SavePicture:", sys.exc_info()[0]
+    filename = ''
+
+  return filename
+
+
+# Remove a picture
+def removePicture(filename):
+  if os.path.exists(filename):
+    os.remove(filename)
+
+  large_file = filename.rsplit('.', 1)[0] + '_lg.' + filename.rsplit('.', 1)[1]
+  if os.path.exists(large_file):
+    os.remove(large_file)
 
 
 @app.route('/fbconnect', methods=['POST'])
@@ -255,33 +311,29 @@ def disconnect():
         del session['picture']
         del session['user_id']
         del session['provider']
-        flash("You have successfully been logged out.")
         return redirect(url_for('showRegions'))
     else:
-        flash("You were not logged in")
         return redirect(url_for('showRegions'))
 
 
 
-
-#Show user settings
-@app.route('/settings')
-def showUserSettings():
-  return render_template('usersettings.html')
-
+#Login to regions app
+@app.route('/login')
+def showLogin():
+  state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
+  session['state'] = state
+  return render_template('login.html', STATE=state)
 
 
 #Show all regions
 @app.route('/')
 def showRegions():
-  if 'user_id' not in session:
-    regions = dbsession.query(Region).join(Region.user).filter(User.allow_public_access == 1).order_by(asc(Region.name))
-    return render_template('regions.html', regions = regions)
-  else:
-    print "A"
-    regions = dbsession.query(Region).join(Region.user).filter((User.allow_public_access == 1) | (User.id == session['user_id'])).order_by(asc(Region.name))
-    print "b"
-    return render_template('regions.html', regions = regions)
+  state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
+  session['state'] = state
+
+  regions = dbsession.query(Region).order_by(asc(Region.name))
+  return render_template('regions.html', regions = regions, STATE=state)
+
 
 #Create a new region
 @app.route('/region/new/', methods=['GET','POST'])
@@ -290,9 +342,15 @@ def newRegion():
     return redirect('/login')
 
   if request.method == 'POST':
-      newRegion = Region(name = request.form['name'], user_id = session['user_id'])
+      pic_filename = savePicture(request)
+      newRegion = Region(name = request.form['name'], 
+        user_id = session['user_id'], 
+        geo_location = request.form['location'], 
+        rating = int(request.form['rating']),
+        picture = pic_filename)
+
       dbsession.add(newRegion)
-      flash('New Region %s Successfully Created' % newRegion.name)
+      flash('New travel log "%s" created.' % newRegion.name)
       dbsession.commit()
       return redirect(url_for('showRegions'))
   else:
@@ -311,10 +369,23 @@ def editRegion(region_id):
     return "<script>function myFunction() {alert('You are not authorized to edit this travel log.');}</script><body onload='myFunction()'>"
     
   if request.method == 'POST':
-      if request.form['name']:
-        editedRegion.name = request.form['name']
-        flash('Region Successfully Edited %s' % editedRegion.name)
-        return redirect(url_for('showRegions'))
+    if request.form['name']:
+      editedRegion.name = request.form['name']
+    if request.form['rating']:
+      editedRegion.rating = int(request.form['rating'])
+    editedRegion.geo_location = request.form['location']
+
+    if request.form['picture_mode'] and (request.form['picture_mode'] == 'disk_radio' or request.form['picture_mode'] == 'web_radio'):
+      if editedRegion.picture != '':
+        removePicture(UPLOAD_FOLDER + editedRegion.picture)
+
+      editedRegion.picture = savePicture(request)
+
+    editedRegion.modifiy_date = datetime.datetime.utcnow()
+    dbsession.commit()
+
+    flash('Saved changes to travel log "%s".' % editedRegion.name)
+    return redirect(url_for('showRegion', region_id = region_id))
   else:
     return render_template('editRegion.html', region = editedRegion)
 
@@ -332,9 +403,9 @@ def deleteRegion(region_id):
 
   if request.method == 'POST':
     dbsession.delete(regionToDelete)
-    flash('%s Successfully Deleted' % regionToDelete.name)
+    flash('Travel log "%s" deleted.' % regionToDelete.name)
     dbsession.commit()
-    return redirect(url_for('showRegions', region_id = region_id))
+    return redirect(url_for('showRegions'))
   else:
     return render_template('deleteRegion.html',region = regionToDelete)
 
@@ -342,12 +413,14 @@ def deleteRegion(region_id):
 #Show a region's places
 @app.route('/region/<int:region_id>/')
 def showRegion(region_id):
-    region = dbsession.query(Region).filter_by(id = region_id).one()
-    items = dbsession.query(Place).filter_by(region_id = region_id).all()
-    creator = getUserInfo(region.user_id)
-    return render_template('places.html', items = items, region = region, creator = creator)
-     
+  state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
+  session['state'] = state
 
+  region = dbsession.query(Region).filter_by(id = region_id).one()
+  items = dbsession.query(Place).filter_by(region_id = region_id).all()
+  creator = getUserInfo(region.user_id)
+  return render_template('places.html', items = items, region = region, creator = creator, STATE=state)
+     
 
 #Create a new place item
 @app.route('/region/<int:region_id>/place/new/',methods=['GET','POST'])
@@ -357,13 +430,23 @@ def newPlace(region_id):
     
   region = dbsession.query(Region).filter_by(id = region_id).one()
   if request.method == 'POST':
-      newItem = Place(name = request.form['name'], description = request.form['description'], price = request.form['price'], course = request.form['course'], region_id = region_id, user_id = session['user_id'])
-      dbsession.add(newItem)
+      pic_filename = savePicture(request)
+      newEntry = Place(name = request.form['name'], 
+        user_id = session['user_id'],
+        region_id = region_id, 
+        description = request.form['description'], 
+        geo_location = request.form['location'], 
+        info_website = request.form['info_website'], 
+        rating = int(request.form['rating']),
+        picture = pic_filename)
+      
+      dbsession.add(newEntry)
       dbsession.commit()
-      flash('New Place %s Item Successfully Created' % (newItem.name))
+      flash('New log entry created.')
       return redirect(url_for('showRegion', region_id = region_id))
   else:
-      return render_template('newPlace.html', region_id = region_id)
+      return render_template('newPlace.html', region = region, region_id = region_id)
+
 
 
 #Edit a place item
@@ -372,27 +455,35 @@ def editPlace(region_id, place_id):
   if 'username' not in session:
     return redirect('/login')
     
-    editedItem = dbsession.query(Place).filter_by(id = place_id).one()
+  editedItem = dbsession.query(Place).filter_by(id = place_id).one()
 
-    if editedItem.user_id != session['user_id']:
-      return "<script>function myFunction() {alert('You are not authorized to edit this log entry.');}</script><body onload='myFunction()'>"
+  if editedItem.user_id != session['user_id']:
+    return "<script>function myFunction() {alert('You are not authorized to edit this log entry.');}</script><body onload='myFunction()'>"
     
-    region = dbsession.query(Region).filter_by(id = region_id).one()
-    if request.method == 'POST':
-        if request.form['name']:
-            editedItem.name = request.form['name']
-        if request.form['description']:
-            editedItem.description = request.form['description']
-        if request.form['price']:
-            editedItem.price = request.form['price']
-        if request.form['course']:
-            editedItem.course = request.form['course']
-        dbsession.add(editedItem)
-        dbsession.commit() 
-        flash('Place Item Successfully Edited')
-        return redirect(url_for('showRegion', region_id = region_id))
-    else:
-        return render_template('editPlace.html', region_id = region_id, place_id = place_id, item = editedItem)
+  region = dbsession.query(Region).filter_by(id = region_id).one()
+  if request.method == 'POST':
+    if request.form['name']:
+      editedItem.name = request.form['name']
+    if request.form['description']:
+      editedItem.description = request.form['description']
+    if request.form['rating']:
+      editedItem.rating = int(request.form['rating'])
+    editedItem.geo_location = request.form['location']
+    editedItem.info_website = request.form['info_website']
+
+    if request.form['picture_mode'] and (request.form['picture_mode'] == 'disk_radio' or request.form['picture_mode'] == 'web_radio'):
+      if editedItem.picture != '':
+        removePicture(UPLOAD_FOLDER + editedItem.picture)
+
+      editedItem.picture = savePicture(request)
+
+    editedItem.modifiy_date = datetime.datetime.utcnow()
+    dbsession.commit()
+
+    flash('Saved changes to log entry.')
+    return redirect(url_for('showRegion', region_id = region_id))
+  else:
+    return render_template('editPlace.html', region_id = region_id, place_id = place_id, item = editedItem)
 
 
 #Delete a place item
@@ -401,24 +492,24 @@ def deletePlace(region_id,place_id):
   if 'username' not in session:
     return redirect('/login')
     
-    region = dbsession.query(Region).filter_by(id = region_id).one()
-    itemToDelete = dbsession.query(Place).filter_by(id = place_id).one() 
+  region = dbsession.query(Region).filter_by(id = region_id).one()
+  itemToDelete = dbsession.query(Place).filter_by(id = place_id).one() 
 
-    if itemToDelete.user_id != session['user_id']:
-      return "<script>function myFunction() {alert('You are not authorized to delete this log entry.');}</script><body onload='myFunction()'>"
-    
-    if request.method == 'POST':
-        dbsession.delete(itemToDelete)
-        dbsession.commit()
-        flash('Place Item Successfully Deleted')
-        return redirect(url_for('showRegion', region_id = region_id))
-    else:
-        return render_template('deletePlace.html', item = itemToDelete)
-
+  if itemToDelete.user_id != session['user_id']:
+    return "<script>function myFunction() {alert('You are not authorized to delete this log entry.');}</script><body onload='myFunction()'>"
+  
+  if request.method == 'POST':
+      dbsession.delete(itemToDelete)
+      dbsession.commit()
+      flash('Log entry deleted.')
+      return redirect(url_for('showRegion', region_id = region_id))
+  else:
+      return render_template('deletePlace.html', region_id = region_id, place_id = place_id, item = itemToDelete)
 
 
 
 if __name__ == '__main__':
+  app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
   app.secret_key = 'super_secret_key'
   app.debug = True
   app.run(host = '0.0.0.0', port = 5000)

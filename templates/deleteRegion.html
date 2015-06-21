@@ -1,16 +1,21 @@
 {% extends "main.html" %}
 {% block content %}
-<h2> Are you sure you want to delete {{region.name}}? </h2>
 
-<form action="#" method = 'post'>
+<div>&nbsp;</div>
+<div class="text-center">
+  <div class="panel">
+    <div class="panel-body">
+    <h3>Are you sure you want to delete the travel log "{{region.name}}"?</h3>
+    <br>
+	<form action="{{ url_for('deleteRegion',region_id = region.id)}}" method = 'post'>
+	    <button type="submit" class="btn btn-danger" id="submit" type="submit"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;Yes, delete it</button>
+	    &nbsp;&nbsp;
+	    <a href="{{url_for('showRegion', region_id = region.id)}}" class="btn btn-default"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>&nbsp;No, keep it</a>
+	</form>
+    <br><br><br>
+    </div>
+  </div>
+</div>
 
-	<button type="submit" class="btn btn-default delete" id="submit" type="submit">
-	<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>Delete</button>
-	<a href = '{{url_for('showRegions')}}'>
-		<button class="btn btn-default delete">
-		<span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
-	</a>
-
-</form>
 
 {% endblock %}

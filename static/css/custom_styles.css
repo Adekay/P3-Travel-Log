@@ -27,8 +27,16 @@ body .main-logo {
 	padding-left: 0px;
 }
 
-body .thumbnail {
+body .region-thumbnail {
 	height: 450px;
+}
+
+body .place-thumbnail {
+	padding: 8px;
+}
+
+body .place-thumbnail-pic {
+	max-width: 350px;
 }
 
 body .jumbotron {
@@ -39,6 +47,9 @@ body .panel-transparent {
 	background-color: rgba(255, 255, 255, 0.3);
 }
 
+body .panel-opaque {
+	background-color: rgba(255, 255, 255, 1);
+}
 body .panel-heading {
 	background-color: rgba(255, 255, 255, 0.5);
 }
@@ -60,11 +71,16 @@ body .profile-pic {
 	height: 40px;
 }
 
+body .profile-pic-md {
+	width: 80px;
+	height: 80px;
+}
+
 body .align-bottom {
     vertical-align: bottom;
 }
 
-body .region-thumbnail {
+body .region-thumbnail-pic {
 	max-height: 240px;
 }
 
@@ -74,24 +90,15 @@ body .col-bottom {
   right: 5px;
 }
 
-body .modal-dialog {
+body .modal-login-dialog {
 	width: 500px;
 }
 
-.glyphicon-refresh-animate {
-    -animation: spin .7s infinite linear;
-    -webkit-animation: spin2 .7s infinite linear;
+body .modal-fullsize-pic {
+	width: 80%;
+
 }
 
-@-webkit-keyframes spin2 {
-    from { -webkit-transform: rotate(0deg);}
-    to { -webkit-transform: rotate(360deg);}
-}
-
-@keyframes spin {
-    from { transform: scale(1) rotate(0deg);}
-    to { transform: scale(1) rotate(360deg);}
-}
 
 /*body .star-rating-area {
 	background-color: rgb(247, 247, 249);

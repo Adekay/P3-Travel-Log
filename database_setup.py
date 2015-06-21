@@ -3,6 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 from sqlalchemy.dialects.sqlite import DATETIME
+import datetime
 
 Base = declarative_base()
 
@@ -12,8 +13,8 @@ class User(Base):
     name = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False)
     picture = Column(String(500))
-    allow_public_access = Column(Integer, nullable=False)
-    signup_date = Column(DATETIME, nullable=False)
+    allow_public_access = Column(Integer, nullable=False)  # Feature not implemented yet
+    signup_date = Column(DATETIME, default=datetime.datetime.utcnow)
 
 
 class Region(Base):
@@ -24,8 +25,8 @@ class Region(Base):
     picture = Column(String(500))
     geo_location = Column(String(500))
     rating = Column(Integer, nullable=False)
-    creation_date = Column(DATETIME, nullable=False)
-    modifiy_date = Column(DATETIME, nullable=False)
+    creation_date = Column(DATETIME, default=datetime.datetime.utcnow)
+    modifiy_date = Column(DATETIME, default=datetime.datetime.utcnow)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
@@ -47,6 +48,8 @@ class Region(Base):
     def visible_to_public(self):
       return self.user.allow_public_access == 1;
 
+    def large_picture(self):
+      return self.picture.replace(".jpg", "_lg.jpg");
 
  
 class Place(Base):
@@ -59,8 +62,8 @@ class Place(Base):
     geo_location = Column(String(500))
     info_website = Column(String(500))
     rating = Column(Integer, nullable=False)
-    creation_date = Column(DATETIME, nullable=False)
-    modifiy_date = Column(DATETIME, nullable=False)
+    creation_date = Column(DATETIME, default=datetime.datetime.utcnow)
+    modifiy_date = Column(DATETIME, default=datetime.datetime.utcnow)
     region_id = Column(Integer,ForeignKey('region.id'))
     region = relationship(Region)
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -83,6 +86,8 @@ class Place(Base):
            'user_id'      : self.user_id,
        }
 
+    def large_picture(self):
+      return self.picture.replace(".jpg", "_lg.jpg");
 
 
 engine = create_engine('sqlite:///travelbucketlist.db')

@@ -1,28 +1,88 @@
 {% extends "main.html" %}
 {% block content %}
-	<div class="row divider green">
-		<div class="col-md-12"></div>
-	</div>
-	<div class="row banner menu">
-		<div class="col-md-11 col-md-offset-1 padding-none">
-			<h1>Edit {{region.name}}</h1>
-		</div>
-	</div>
+
+<div>&nbsp;</div>
+<div class="thumbnail place-thumbnail">
 	<div class="row">
-		<div class="col-md-6 col-md-offset-1 padding-top">
-			<form action="{{ url_for('editRegion',region_id = region.id)}}" method = "post">
-				<div class="form-group">
-					<label for="name">Name:</label>
-					<input type ="text" class="form-control" name="name" value="{{region.name }}">
-					<div class="padding-bottom"></div>
-					<button type="submit" class="btn btn-default" id="submit" type="submit">
-					<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>Save</button>
-					<a href = '{{url_for('showRegions')}}'>
-						<button class="btn btn-default delete">
-						<span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
-					</a>
-				</div>
+		<div class="col-md-12">
+			<h3>Create a new travel log</h3>
+
+			<form action="{{ url_for('editRegion',region_id = region.id)}}" method = "post" enctype=multipart/form-data>
+			  <div class="form-group">
+			    <label for="name">Name:</label>
+			    <input type="text" class="form-control" maxlength="100" name="name" value="{{region.name }}">
+			  </div>
+			  <div class="form-group">
+			    <label for="picture">Picture:</label><br>
+
+			    <label for="keep_radio">
+			        <input type="radio" name="picture_mode" value="keep_radio" checked="true" /> Keep current picture
+			    </label>
+					<img class="img-responsive region-thumbnail-pic" src="{{ url_for('static', filename='thumbnails/'+region.picture) }}" alt="{{region.name}}">
+
+			    <label for="disk_radio">
+			        <input type="radio" name="picture_mode" value="disk_radio"/> Upload a new picture
+			    </label>
+					<input type="file" class="filestyle disk_radio" data-buttonName="btn btn-default" data-input="true" data-classIcon="icon-plus" data-badge="false" data-buttonBefore="true" data-buttonText="Find Picture" name="file" disabled>
+			    <label for="web_radio">
+			        <input type="radio" name="picture_mode" value="web_radio" /> Select a new picture from the web
+			    </label>
+			        <input type="text" class="form-control web_radio" name="picture_url" disabled="true" placeholder="Enter picture URL here"/>
+			  </div>
+			  <div class="form-group">
+			    <label for="rating">Rating:</label>
+			    <select class="form-control" id="rating" name="rating" value="{{ region.rating }}">
+				    <option value="10">10</option>
+				    <option value="9">9</option>
+				    <option value="8">8</option>
+				    <option value="7">7</option>
+				    <option value="6">6</option>
+				    <option value="5">5</option>
+				    <option value="4">4</option>
+				    <option value="3">3</option>
+				    <option value="2">2</option>
+				    <option value="1">1</option>
+			    </select>
+			  </div>
+			  <div class="form-group">
+			    <label for="name">Location:</label>
+			    <input type="text" class="form-control" maxlength="500" name="location" value="{{region.geo_location }}">
+			  </div>
+			  <button type="submit" class="btn btn-primary">Submit</button>
+			  <a href="{{url_for('showRegion', region_id = region.id)}}" class="btn btn-default">Cancel</a>
 			</form>
+
 		</div>
 	</div>
+</div>
+
+
 {% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap-filestyle.min.js') }}"> </script>
+
+<script>
+	$(function() {
+    	var temp="{{ region.rating }}"; 
+    	$("#rating").val(temp);
+	});
+</script>
+
+<script>
+$(document).ready(function(){
+    $('input[type=radio][name=picture_mode]').click(function(){
+        var related_class=$(this).val();
+        $('.'+related_class).prop('disabled',false);
+        
+        $('input[type=radio][name=picture_mode]').not(':checked').each(function(){
+            var other_class=$(this).val();
+            $('.'+other_class).prop('disabled',true);
+        });
+    });
+
+});
+</script>
+{% endblock %}
+

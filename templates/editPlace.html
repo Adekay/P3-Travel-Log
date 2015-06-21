@@ -1,57 +1,88 @@
 {% extends "main.html" %}
 {% block content %}
-	<div class="row divider green">
-		<div class="col-md-12"></div>
-	</div>
-	<div class="row banner menu">
-		<div class="col-md-11 col-md-offset-1 padding-none">
-			<h1>Edit Menu Item</h1>
-		</div>
-	</div>
+
+<div>&nbsp;</div>
+<div class="thumbnail place-thumbnail">
 	<div class="row">
-		<div class="col-md-6 col-md-offset-1 padding-top">
-			<form action="#" method = "post">
-				<div class="form-group">
-					<label for="name">Name:</label>
-					<input type ="text" maxlength="100" class="form-control" name="name" value="{{item.name }}">
+		<div class="col-md-12">
+			<h3>Edit a log entry</h3>
 
-					<label for="description">Description:</label>
-					<textarea class="form-control" maxlength="250" rows="3" name="description">{{item.description}}</textarea>
+			<form action="#" method = "post" enctype=multipart/form-data>
+			  <div class="form-group">
+			    <label for="name">Name:</label>
+			    <input type="text" class="form-control" maxlength="100" name="name" value="{{ item.name }}">
+			  </div>
+			  <div class="form-group">
+			    <label for="description">Description:</label>
+			    <textarea class="form-control" rows="4" maxlength="2000" name="description">{{ item.description }}</textarea>
+			  </div>
+			  <div class="form-group">
+			    <label for="picture">Picture:</label><br>
 
-					<label for="price">Price:</label>
-					<div class="input-group">
-						<div class="input-group-addon">$</div>
-						<input type ="text" maxlength="10" class="form-control" name="price" value="{{item.price}}">
-					</div>
-					<label for="course">Course:</label>
-					<div class="radio">
-					  <label>
-					    <input type="radio" name="course" id="course1" value="Appetizer" {% if item.course == 'Appetizer'%}checked{%endif%}>Appetizer
-					  </label>
-					</div>
-					<div class="radio">
-					  <label>
-					    <input type="radio" name="course" id="course2" value="Entree" {% if item.course == 'Entree' %}checked{%endif%}>Entree
-					  </label>
-					</div>
-					<div class="radio">
-					  <label>
-					    <input type="radio" name="course" id="course3" value="Dessert" {% if item.course == 'Dessert'%}checked{%endif%}>Dessert
-					  </label>
-					</div>
-					<div class="radio">
-					  <label>
-					    <input type="radio" name="course" id="course4" value="Beverage" {%if item.course =='Beverage'%}checked{%endif%}>Beverage
-					  </label>
-					</div>
-					<button type="submit" class="btn btn-default" id="submit" type="submit">
-					<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>Save</button>
-					<a href = '{{url_for('showRegions')}}'>
-						<button class="btn btn-default delete">
-						<span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
-					</a>
-				</div>
+			    <label for="keep_radio">
+			        <input type="radio" name="picture_mode" value="keep_radio" checked="true" /> Keep current picture
+			    </label>
+					<img class="img-responsive region-thumbnail-pic" src="{{ url_for('static', filename='thumbnails/'+item.picture) }}" alt="{{item.name}}">
+
+			    <label for="disk_radio">
+			        <input type="radio" name="picture_mode" value="disk_radio"/> Upload a picture
+			    </label>
+					<input type="file" class="filestyle disk_radio" data-buttonName="btn btn-default" data-input="true" data-classIcon="icon-plus" data-badge="false" data-buttonBefore="true" data-buttonText="Find Picture" name="file" disabled>
+			    <label for="web_radio">
+			        <input type="radio" name="picture_mode" value="web_radio" /> Select a picture from the web
+			    </label>
+			        <input type="text" class="form-control web_radio" name="picture_url" disabled="true" placeholder="Enter picture URL here"/>
+			  </div>
+			  <div class="form-group">
+			    <label for="rating">Rating:</label>
+			    <select class="form-control" id="rating" name="rating" value="{{ item.rating }}">
+				    <option value="10">10</option>
+				    <option value="9">9</option>
+				    <option value="8">8</option>
+				    <option value="7">7</option>
+				    <option value="6">6</option>
+				    <option value="5">5</option>
+				    <option value="4">4</option>
+				    <option value="3">3</option>
+				    <option value="2">2</option>
+				    <option value="1">1</option>
+			    </select>
+			  </div>
+			  <div class="form-group">
+			    <label for="name">Location:</label>
+			    <input type="text" class="form-control" maxlength="500" name="location" value="{{ item.geo_location }}">
+			  </div>
+			  <div class="form-group">
+			    <label for="info_website">Info website:</label>
+			    <input type="text" class="form-control" maxlength="500" name="info_website" value="{{ item.info_website }}">
+			  </div>
+			  <button type="submit" class="btn btn-primary">Submit</button>
+			  <a href="{{url_for('showRegions')}}" class="btn btn-default">Cancel</a>
 			</form>
+
 		</div>
 	</div>
+</div>
+
+
 {% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap-filestyle.min.js') }}"> </script>
+
+<script>
+$(document).ready(function(){
+    $('input[type=radio][name=picture_mode]').click(function(){
+        var related_class=$(this).val();
+        $('.'+related_class).prop('disabled',false);
+        
+        $('input[type=radio][name=picture_mode]').not(':checked').each(function(){
+            var other_class=$(this).val();
+            $('.'+other_class).prop('disabled',true);
+        });
+    });
+});
+</script>
+{% endblock %}
+
+
