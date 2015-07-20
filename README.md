@@ -38,3 +38,17 @@ To run the program, follow the following steps :
 2) Go into the "vagrant" folder using "cd /vagrant"
 3) Run the project using the command "python project.py"
 4) Open a web browser and go to the the address "http://localhost:5000/"
+
+
+API ENDPOINTS (JSON) : 
+---------------------
+The Travel Log app provides an API of JSON endpoints. Here is the list :
+	/region/JSON
+	Returns the list of travel logs
+	
+	/region/<region_id>/place/JSON
+	Returns the contents of a given travel logs
+	
+	/region/<region_id>/place/<place_id>/JSON
+	Returns a specific entry for a given travel log
+	
