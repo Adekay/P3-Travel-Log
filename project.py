@@ -8,6 +8,7 @@ import sys
 import datetime
 import urllib
 import uuid
+from functools import wraps
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash, session, make_response
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
@@ -54,6 +55,16 @@ def regionsJSON():
 
 
 # Login related functions
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+      if 'username' not in session:
+        return redirect('/login')
+      return f(*args, **kwargs)
+    return decorated_function
+
+
 def createUser(session):
   newUser = User(name = session['username'], email = session['email'], picture = session['picture'], allow_public_access = 1, signup_date = datetime.datetime.now())
   dbsession.add(newUser)
@@ -336,10 +347,8 @@ def showRegions():
 
 #Create a new region
 @app.route('/region/new/', methods=['GET','POST'])
+@login_required
 def newRegion():
-  if 'username' not in session:
-    return redirect('/login')
-
   if request.method == 'POST':
       pic_filename = savePicture(request)
       newRegion = Region(name = request.form['name'], 
@@ -358,10 +367,8 @@ def newRegion():
 
 #Edit a region
 @app.route('/region/<int:region_id>/edit/', methods = ['GET', 'POST'])
+@login_required
 def editRegion(region_id):
-  if 'username' not in session:
-    return redirect('/login')
-  
   editedRegion = dbsession.query(Region).filter_by(id = region_id).one()
 
   if editedRegion.user_id != session['user_id']:
@@ -391,10 +398,8 @@ def editRegion(region_id):
 
 #Delete a region
 @app.route('/region/<int:region_id>/delete/', methods = ['GET','POST'])
+@login_required
 def deleteRegion(region_id):
-  if 'username' not in session:
-    return redirect('/login')
-  
   regionToDelete = dbsession.query(Region).filter_by(id = region_id).one()
 
   if regionToDelete.user_id != session['user_id']:
@@ -428,10 +433,8 @@ def showRegion(region_id):
 
 #Create a new place item
 @app.route('/region/<int:region_id>/place/new/',methods=['GET','POST'])
+@login_required
 def newPlace(region_id):
-  if 'username' not in session:
-    return redirect('/login')
-    
   region = dbsession.query(Region).filter_by(id = region_id).one()
   if request.method == 'POST':
       pic_filename = savePicture(request)
@@ -455,10 +458,8 @@ def newPlace(region_id):
 
 #Edit a place item
 @app.route('/region/<int:region_id>/place/<int:place_id>/edit', methods=['GET','POST'])
+@login_required
 def editPlace(region_id, place_id):
-  if 'username' not in session:
-    return redirect('/login')
-    
   editedItem = dbsession.query(Place).filter_by(id = place_id).one()
 
   if editedItem.user_id != session['user_id']:
@@ -492,10 +493,8 @@ def editPlace(region_id, place_id):
 
 #Delete a place item
 @app.route('/region/<int:region_id>/place/<int:place_id>/delete', methods = ['GET','POST'])
+@login_required
 def deletePlace(region_id,place_id):
-  if 'username' not in session:
-    return redirect('/login')
-    
   region = dbsession.query(Region).filter_by(id = region_id).one()
   itemToDelete = dbsession.query(Place).filter_by(id = place_id).one() 
 
