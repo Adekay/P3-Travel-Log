@@ -185,7 +185,7 @@ print "Generating places..."
 
 place111 = Place(name = "Visit Tokyo",
     description = "Tokyo, Japan's bustling capital, mixes the ultramodern and the traditional, from neon-lit skyscrapers and anime shops to cherry trees and temples. The opulent Meiji Shinto Shrine is known for its towering gate and surrounding forests. The Imperial Palace sits amid sprawling public gardens. The city is famed for its vibrant food scene, and its Shibuya and Harajuku districts are the heart of its trendy teen fashion scene.",
-    picture = "tbtb000012.jpg",
+    picture = "tb000012.jpg",
     geo_location = "https://www.google.ca/maps/place/Tokyo,+Japan/data=!4m2!3m1!1s0x605d1b87f02e57e7:0x2e01618b22571b89?sa=X&ei=09Z0VaDWE8-WyASgporwCw&ved=0CJcBEPIBMBI",
     info_website = "http://www.gotokyo.org/en/",
     rating = 7,
@@ -198,7 +198,7 @@ session.add(place111)
 
 place112 = Place(name = "Climb Mount Fuji",
     description = "Mount Fuji, located on Honshu Island, is the highest mountain in Japan at 3,776.24 m. An active stratovolcano that last erupted in 1707-08, Mount Fuji lies about 100 kilometres south-west of Tokyo, and can be seen from there on a clear day.",
-    picture = "tbtb000013.jpg",
+    picture = "tb000013.jpg",
     geo_location = "https://www.google.ca/maps/place/Mt+Fuji/data=!4m2!3m1!1s0x60196290556df7cf:0x8d5003885b877511!5m1!1e4?sa=X&ei=PNd0VaeaJZGSyAS7zIKwDg&ved=0CJIBEPIBMA4",
     info_website = "http://www.japan-guide.com/e/e2172.html",
     rating = 9,
@@ -213,7 +213,7 @@ session.add(place112)
 place121 = Place(name = "Go to Queenstown",
 
     description = "Queenstown, New Zealand, sits on the shore of the South Island's Lake Wakatipu, set against the dramatic Southern Alps. The surrounding Central Otago region is known for its Pinot Noir and Chardonnay vineyards, and for adventure sports. In winter, there's backcountry skiing and the country's highest vertical drops. Summer brings paragliding, mountain biking and bungee-jumping (Kawarau Gorge Suspension Bridge is among the sport's original sites).",
-    picture = "tbtb000014.jpg",
+    picture = "tb000014.jpg",
     geo_location = "https://www.google.ca/maps/place/Queenstown,+New+Zealand/data=!4m2!3m1!1s0xa9d51df1d7a8de5f:0x500ef868479a600?sa=X&ei=s9d0VcKlK86YyATh34PwAQ&ved=0CJkBEPIBMBA",
     info_website = "http://www.japan-guide.com/e/e2172.html",
     rating = 9,
@@ -226,7 +226,7 @@ session.add(place121)
 
 place122 = Place(name = "Milford Sound",
     description = "Milford Sound is a fiord in the south west of New Zealand's South Island, within Fiordland National Park, Piopiotahi Marine Reserve, and the Te Wahipounamu World Heritage site.",
-    picture = "tbtb000015.jpg",
+    picture = "tb000015.jpg",
     geo_location = "https://www.google.ca/maps/place/Milford+Sound/data=!4m2!3m1!1s0xa9d5e04dba4b49e1:0x2a00ef86ab64de00?sa=X&ei=E9h0VYWHM8X9yQS1rIDIAw&ved=0CIUBEPIBMA4",
     info_website = "http://www.milford-sound.co.nz/",
     rating = 9,
@@ -241,7 +241,7 @@ session.add(place122)
 
 place211 = Place(name = "Go to Queenstown",
     description = "Queenstown, New Zealand, sits on the shore of the South Island's Lake Wakatipu, set against the dramatic Southern Alps. The surrounding Central Otago region is known for its Pinot Noir and Chardonnay vineyards, and for adventure sports. In winter, there's backcountry skiing and the country's highest vertical drops. Summer brings paragliding, mountain biking and bungee-jumping (Kawarau Gorge Suspension Bridge is among the sport's original sites).",
-    picture = "tbtb000016.jpg",
+    picture = "tb000016.jpg",
     geo_location = "https://www.google.ca/maps/place/Queenstown,+New+Zealand/data=!4m2!3m1!1s0xa9d51df1d7a8de5f:0x500ef868479a600?sa=X&ei=s9d0VcKlK86YyATh34PwAQ&ved=0CJkBEPIBMBA",
     info_website = "http://www.japan-guide.com/e/e2172.html",
     rating = 8,
@@ -254,7 +254,7 @@ session.add(place211)
 
 place212 = Place(name = "Milford Sound",
     description = "Milford Sound is a fiord in the south west of New Zealand's South Island, within Fiordland National Park, Piopiotahi Marine Reserve, and the Te Wahipounamu World Heritage site.",
-    picture = "tbtb000017.jpg",
+    picture = "tb000017.jpg",
     geo_location = "https://www.google.ca/maps/place/Milford+Sound/data=!4m2!3m1!1s0xa9d5e04dba4b49e1:0x2a00ef86ab64de00?sa=X&ei=E9h0VYWHM8X9yQS1rIDIAw&ved=0CIUBEPIBMA4",
     info_website = "http://www.milford-sound.co.nz/",
     rating = 10,
@@ -267,7 +267,7 @@ session.add(place212)
 
 place212 = Place(name = "Abel Tasman",
     description = "Abel Tasman National Park is a New Zealand national park located between Golden Bay and Tasman Bay at the north end of the South Island.",
-    picture = "tbtb000018.jpg",
+    picture = "tb000018.jpg",
     geo_location = "https://www.google.ca/maps/place/abel+tasman+national+park/@-40.934685,172.972155,10z/data=!4m2!3m1!1s0x0:0xf00ef87655bee50?sa=X&ei=Zdl0VY3YIZCZyATp1YCgCA&ved=0CJQBEPwSMBA",
     info_website = "https://www.abeltasman.co.nz/",
     rating = 9,
